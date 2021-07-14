@@ -1,33 +1,40 @@
 import React from 'react';
 import { connect } from "react-redux";
+import { deleteDard, fetchUsers } from "../actions/cardActions";
 
 class Card extends React.Component {
 
   // state = { user: '' }
 
-  // componentDidMount(){
-  //   let user = this.props.match.params.user;
-  //   this.setState({user});
-  // }
+  componentDidMount() {
+    this.props.fetchUsers();
+  }
   onButtonClick = () => {
-    let id = this.props.card.id
+    let id = this.props.card.id;
     this.props.deleteCard(id);
     this.props.history.push('/contact')
   }
 
   render() {
-    const { title, body } = this.props.card;
+    // console.log(this.props.users);
+    // const { title, body } = this.props.card;
+    const { users } = this.props;
     return (
-      <div
-        className='ui raised very padded text container segment'
-        style={{ marginTop: '80px' }}
-      >
-        <h3 className='ui header'>{title}</h3>
-        <p>{body}</p>
-        <button className='ui primary right floated button' onClick={this.onButtonClick}>
-          Delete
-        </button>
-      </div>
+      users.map(({name, email,id}) => {
+        return (
+          <div
+            className='ui raised very padded text container segment'
+            style={{ marginTop: '80px' }}
+            key={id}
+          >
+            <h3 className='ui header'>{name}</h3>
+            <p>{email}</p>
+            <button className='ui primary right floated button' onClick={this.onButtonClick}>
+              Delete
+            </button>
+          </div>
+        )
+      })
     )
   }
 }
@@ -37,13 +44,15 @@ const mapStateToProps = (state, ownProps) => {
   return {
     card: state.cards.find(card => {
       return card.title === title
-    })
+    }),
+    users: state.users
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    deleteCard: (id) => { dispatch({ type: 'DELETE_CARD', id }) }
+    deleteCard: (id) => { dispatch(deleteDard(id)) },
+    fetchUsers: () => { dispatch(fetchUsers()) }
   }
 }
 
